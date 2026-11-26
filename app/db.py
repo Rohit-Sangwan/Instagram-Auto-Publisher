@@ -150,7 +150,7 @@ class Published(Base):
 
 class Schedule(Base):
     __tablename__ = "publishing_schedules"
-    timezone: Mapped[str] = column(default="Asia/Kolkata")
+    timezone: Mapped[str] = column(default="UTC")
     start: Mapped[str] = column(default="09:00")
     end: Mapped[str] = column(default="21:00")
     daily: Mapped[int] = column(default=3)

@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 .venv/
 data/
 backups/
@@ -7,3 +9,11 @@ __pycache__/
 node_modules/
 dist/
 *.bak
+*.log
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.pem
+*.key
+*.pfx

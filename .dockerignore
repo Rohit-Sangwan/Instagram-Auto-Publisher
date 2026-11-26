@@ -1,11 +1,20 @@
 .env
+.env.*
+!.env.example
 .venv
 data
 backups
 .git
 **/.git
-Instagram Auto Publisher
 **/__pycache__
 frontend/node_modules
 frontend/dist
 .pytest_cache
+**/*.log
+**/*.sqlite
+**/*.sqlite3
+**/*.sqlite3-shm
+**/*.sqlite3-wal
+**/*.pem
+**/*.key
+**/*.pfx

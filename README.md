@@ -14,6 +14,8 @@ bash install.sh publisher.example.com admin@example.com
 
 The installer generates and prints the initial admin password, provisions HTTPS, starts the services, and configures certificate renewal. Save the password and protect the generated `.env`. Store the database backup and a secure copy of the token encryption key separately. The dashboard URL is the hostname you provided.
 
+A fresh installation starts with an empty account list, source list, and publishing queue. Set your time zone in **Settings** before enabling automatic publishing. The default is UTC.
+
 ### Connect Meta
 
 1. In Meta for Developers, configure the Instagram product with Instagram Login. Copy the **Instagram** App ID and secret from that setup into `META_APP_ID` and `META_APP_SECRET` in `.env`.

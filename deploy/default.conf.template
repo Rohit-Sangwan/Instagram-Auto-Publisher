@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name ${PUBLISHER_DOMAIN};
+    access_log off;
+    location ^~ /.well-known/acme-challenge/ { root /var/www/acme; }
+    location / { return 308 https://${PUBLISHER_DOMAIN}$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${PUBLISHER_DOMAIN};
+    ssl_certificate /etc/letsencrypt/live/${PUBLISHER_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${PUBLISHER_DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    access_log off;
+    error_log /dev/null;
+    server_tokens off;
+    root /usr/share/nginx/html;
+    client_max_body_size 1m;
+    client_body_timeout 60s;
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    set $backend http://api:8000;
+    proxy_read_timeout 1800s;
+    proxy_send_timeout 60s;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://*.cdninstagram.com https://*.fbcdn.net; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'" always;
+    add_header Referrer-Policy "no-referrer" always;
+    add_header X-Content-Type-Options "nosniff" always;
+
+    location /api/ {
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass $backend;
+        location = /api/import {
+            client_max_body_size 1g;
+            proxy_request_buffering off;
+            proxy_pass $backend;
+        }
+    }
+    location /media/ {
+        proxy_set_header Host $host;
+        proxy_pass $backend;
+    }
+    location / { try_files $uri $uri/ /index.html; }
+}

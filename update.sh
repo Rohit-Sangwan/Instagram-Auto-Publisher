@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+bash backup.sh
+docker compose up -d --build --wait
+docker compose ps

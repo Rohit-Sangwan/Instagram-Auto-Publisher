@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - state:/data
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 75s
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  proxy:
+    build:
+      context: .
+      target: proxy
+    environment:
+      PUBLISHER_DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+      NGINX_ENVSUBST_FILTER: ^PUBLISHER_DOMAIN$
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/instagram-publisher-acme:/var/www/acme:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  state:
